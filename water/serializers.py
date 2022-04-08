@@ -8,4 +8,4 @@ class HX2021Serializer(serializers.ModelSerializer):
 
     class Meta:
         model = HX2021
-        fields = ALL_FIELDS
+        exclude = ['originalvalue', 'lasttime', 'valuestate', 'valuetype', 'lastvalue', 'flag']
