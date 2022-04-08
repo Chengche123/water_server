@@ -60,6 +60,9 @@ class USensor(models.Model):
         managed = False
         db_table = 'u_sensor'
 
+    def __str__(self):
+        return str(self.code)
+
 
 class HX2021(models.Model):
     autoid = models.BigAutoField(db_column='Autoid', primary_key=True)  # Field name made lowercase.
@@ -76,3 +79,7 @@ class HX2021(models.Model):
     class Meta:
         managed = False
         db_table = 'h_x2021'
+        ordering = ['-udatetime']
+
+    def __str__(self):
+        return str(self.value)
