@@ -4,10 +4,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework import authentication
+from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 
 from .models import HX2021
-from .serializers import HX2021Serializer
+from .serializers import HX2021Serializer, UserSerializer
 
 
 class BookLimitOffsetPagination(LimitOffsetPagination):
@@ -36,3 +38,14 @@ class HX2021ViewSet(viewsets.ReadOnlyModelViewSet):
     authentication_classes = [authentication.SessionAuthentication, MyBasicAuthentication]
     # 权限
     permission_classes = [permissions.IsAuthenticated]
+
+
+@api_view(['GET'])
+@authentication_classes([authentication.SessionAuthentication])
+@permission_classes([permissions.IsAuthenticated])
+def user(request):
+    """ Get the authenticated user """
+
+    instance = request.user
+    serializer = UserSerializer(instance)
+    return Response(serializer.data)

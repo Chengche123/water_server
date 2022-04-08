@@ -10,4 +10,5 @@ router.register(r'hx2021', views.HX2021ViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('accounts/', include('rest_framework.urls')),
+    path('user', views.user),
 ]
