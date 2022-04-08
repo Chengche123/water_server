@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'water',
     'rest_framework',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
