@@ -6,6 +6,7 @@ from water import views
 
 router = DefaultRouter()
 router.register(r'hx2021', views.HX2021ViewSet)
+router.register(r'hx2022', views.HX2022ViewSet)
 router.register(r'users', views.UserViewSet)
 
 urlpatterns = [

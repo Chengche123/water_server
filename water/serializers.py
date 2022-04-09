@@ -3,7 +3,7 @@ from rest_framework.serializers import ALL_FIELDS
 
 from django.contrib.auth.models import User
 
-from .models import HX2021
+from .models import HX2021, HX2022
 
 
 class HX2021Serializer(serializers.ModelSerializer):
@@ -18,3 +18,9 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username']
+
+
+class HX2022Serializer(HX2021Serializer):
+
+    class Meta(HX2021Serializer.Meta):
+        model = HX2022

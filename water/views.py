@@ -10,8 +10,8 @@ from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 
-from .models import HX2021
-from .serializers import HX2021Serializer, UserSerializer
+from .models import HX2021, HX2022
+from .serializers import HX2021Serializer, UserSerializer, HX2022Serializer
 
 
 class BookLimitOffsetPagination(LimitOffsetPagination):
@@ -40,6 +40,13 @@ class HX2021ViewSet(viewsets.ReadOnlyModelViewSet):
     authentication_classes = [authentication.SessionAuthentication, MyBasicAuthentication]
     # 权限
     permission_classes = [permissions.IsAuthenticated]
+
+
+class HX2022ViewSet(viewsets.ModelViewSet, HX2021ViewSet):
+    queryset = HX2022.objects.all()
+    serializer_class = HX2022Serializer
+    # 权限
+    permission_classes = [permissions.AllowAny]
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
