@@ -83,3 +83,23 @@ class HX2021(models.Model):
 
     def __str__(self):
         return str(self.value)
+
+
+class HX2022(models.Model):
+    autoid = models.BigAutoField(db_column='Autoid', primary_key=True)  # Field name made lowercase.
+    code = models.CharField(db_column='Code', max_length=14, blank=True, null=True)  # Field name made lowercase.
+    udatetime = models.DateTimeField(db_column='uDateTime', blank=True, null=True)  # Field name made lowercase.
+    originalvalue = models.FloatField(db_column='OriginalValue', blank=True, null=True)  # Field name made lowercase.
+    value = models.FloatField(db_column='Value', blank=True, null=True)  # Field name made lowercase.
+    valuestate = models.CharField(db_column='ValueState', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    valuetype = models.SmallIntegerField(db_column='ValueType', blank=True, null=True)  # Field name made lowercase.
+    flag = models.IntegerField(db_column='Flag', blank=True, null=True)  # Field name made lowercase.
+    lastvalue = models.FloatField(db_column='LastValue', blank=True, null=True)  # Field name made lowercase.
+    lasttime = models.DateTimeField(db_column='LastTime', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        db_table = 'h_x2022'
+        ordering = ['-udatetime']
+
+    def __str__(self):
+        return str(self.value)
