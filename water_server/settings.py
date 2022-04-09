@@ -42,7 +42,15 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     "corsheaders",
+    'channels',
 ]
+
+ASGI_APPLICATION = "water_server.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^http://127\.0\.0\.1.*",
