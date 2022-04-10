@@ -100,6 +100,10 @@ class HX2022(models.Model):
     class Meta:
         db_table = 'h_x2022'
         ordering = ['-udatetime']
+        indexes = [
+            models.Index(fields=['code']),
+            models.Index(fields=['udatetime']),
+        ]
 
     def __str__(self):
         return str(self.value)
