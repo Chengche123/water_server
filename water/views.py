@@ -42,11 +42,19 @@ class HX2021ViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
+class CsrfExemptSessionAuthentication(authentication.SessionAuthentication):
+    def enforce_csrf(self, request):
+        return  # To not perform the csrf check previously happening
+
+
 class HX2022ViewSet(viewsets.ModelViewSet, HX2021ViewSet):
     queryset = HX2022.objects.all()
     serializer_class = HX2022Serializer
     # 权限
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    # 认证
+    # 去掉 csrf 验证，因为要在脚本中定时发送 POST 请求
+    authentication_classes = [CsrfExemptSessionAuthentication, MyBasicAuthentication]
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -54,6 +62,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAdminUser]
 
+    # 防止浏览器弹登录窗口
     def get_authenticate_header(self, request):
         return {}
 
