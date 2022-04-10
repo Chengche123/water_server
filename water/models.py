@@ -88,7 +88,7 @@ class HX2021(models.Model):
 class HX2022(models.Model):
     autoid = models.BigAutoField(db_column='Autoid', primary_key=True)  # Field name made lowercase.
     code = models.CharField(db_column='Code', max_length=14, blank=True, null=True)  # Field name made lowercase.
-    udatetime = models.DateTimeField(db_column='uDateTime', blank=True, null=True)  # Field name made lowercase.
+    udatetime = models.DateTimeField(db_column='uDateTime', blank=True, null=True, auto_now_add=True)  # Field name made lowercase.
     originalvalue = models.FloatField(db_column='OriginalValue', blank=True, null=True)  # Field name made lowercase.
     value = models.FloatField(db_column='Value', blank=True, null=True)  # Field name made lowercase.
     valuestate = models.CharField(db_column='ValueState', max_length=100, blank=True, null=True)  # Field name made lowercase.
