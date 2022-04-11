@@ -8,6 +8,7 @@ router = DefaultRouter()
 router.register(r'hx2021', views.HX2021ViewSet)
 router.register(r'hx2022', views.HX2022ViewSet)
 router.register(r'users', views.UserViewSet)
+router.register(r'sensors', views.USensorViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

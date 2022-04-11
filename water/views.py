@@ -10,11 +10,11 @@ from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 
-from .models import HX2021, HX2022
-from .serializers import HX2021Serializer, UserSerializer, HX2022Serializer
+from .models import HX2021, HX2022, USensor
+from .serializers import HX2021Serializer, UserSerializer, HX2022Serializer, USensorSerializer
 
 
-class BookLimitOffsetPagination(LimitOffsetPagination):
+class CustomLimitOffsetPagination(LimitOffsetPagination):
     default_limit = 10
 
 
@@ -32,7 +32,7 @@ class HX2021ViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = HX2021.objects.all()
     serializer_class = HX2021Serializer
     # 分页
-    pagination_class = BookLimitOffsetPagination
+    pagination_class = CustomLimitOffsetPagination
     # 过滤
     filter_backends = [DjangoFilterBackend]
     filterset_fields = '__all__'
@@ -85,3 +85,17 @@ def user(request):
     instance = request.user
     serializer = UserSerializer(instance)
     return Response(serializer.data)
+
+
+class USensorViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = USensor.objects.all()
+    serializer_class = USensorSerializer
+    # 认证
+    authentication_classes = [authentication.SessionAuthentication, MyBasicAuthentication]
+    # 权限
+    permission_classes = [permissions.IsAuthenticated]
+    # 分页
+    pagination_class = CustomLimitOffsetPagination
+    # 过滤
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = '__all__'
