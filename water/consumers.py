@@ -24,5 +24,5 @@ class HX2022Consumer(GenericAsyncAPIConsumer):
         return HX2022Serializer(instance).data
 
     @action()
-    async def subscribe_to_comment_activity(self, request_id, **kwargs):
+    async def subscribe_to_hx2022_activity(self, request_id, **kwargs):
         await self.comment_activity.subscribe(request_id=request_id)
