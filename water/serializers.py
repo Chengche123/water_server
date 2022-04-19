@@ -30,4 +30,4 @@ class USensorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = USensor
-        fields = ['autoid', 'code', 'sensortypename', 'address']
+        fields = ['autoid', 'code', 'sensortypename', 'address', 'measurename']
