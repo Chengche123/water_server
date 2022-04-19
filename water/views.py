@@ -8,6 +8,8 @@ from rest_framework import authentication
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework_extensions.cache.decorators import cache_response
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 
 from .models import HX2021, HX2022, USensor
@@ -47,7 +49,7 @@ class CsrfExemptSessionAuthentication(authentication.SessionAuthentication):
         return  # To not perform the csrf check previously happening
 
 
-class HX2022ViewSet(viewsets.ModelViewSet, HX2021ViewSet):
+class HX2022ViewSet(CacheResponseMixin, viewsets.ModelViewSet, HX2021ViewSet):
     queryset = HX2022.objects.all()
     serializer_class = HX2022Serializer
     # 权限
@@ -55,6 +57,10 @@ class HX2022ViewSet(viewsets.ModelViewSet, HX2021ViewSet):
     # 认证
     # 去掉 csrf 验证，因为要在脚本中定时发送 POST 请求
     authentication_classes = [CsrfExemptSessionAuthentication, MyBasicAuthentication]
+
+    @cache_response(key_func='list_cache_key_func', timeout=60)
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -87,7 +93,7 @@ def user(request):
     return Response(serializer.data)
 
 
-class USensorViewSet(viewsets.ReadOnlyModelViewSet):
+class USensorViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = USensor.objects.all()
     serializer_class = USensorSerializer
     # 认证
@@ -99,3 +105,7 @@ class USensorViewSet(viewsets.ReadOnlyModelViewSet):
     # 过滤
     filter_backends = [DjangoFilterBackend]
     filterset_fields = '__all__'
+
+    @cache_response(key_func='list_cache_key_func', timeout=600)
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
