@@ -14,7 +14,7 @@ from rest_framework_extensions.cache.mixins import CacheResponseMixin
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 
 from .models import HX2021, HX2022, USensor
-from .serializers import HX2021Serializer, UserSerializer, HX2022Serializer, USensorSerializer
+from .serializers import HX2021Serializer, UserSerializer, HX2022Serializer, USensorSerializer, UserCreateSerializer
 
 
 class CustomLimitOffsetPagination(LimitOffsetPagination):
@@ -73,10 +73,20 @@ class UserPermission(permissions.IsAdminUser):
 
 
 # mixins.CreateModelMixin: POST /users 注册用户接口
-class UserViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [UserPermission]
+    # 定制序列化
+    serializer_action_classes = {
+        'create': UserCreateSerializer,
+    }
+
+    def get_serializer_class(self):
+        try:
+            return self.serializer_action_classes[self.action]
+        except (KeyError, AttributeError):
+            return super().get_serializer_class()
 
     # 防止浏览器弹登录窗口
     def get_authenticate_header(self, request):
