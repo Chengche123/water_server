@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout
 from django_filters.rest_framework import DjangoFilterBackend
 
+from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework import authentication
@@ -63,15 +64,25 @@ class HX2022ViewSet(CacheResponseMixin, viewsets.ModelViewSet, HX2021ViewSet):
         return super().list(request, *args, **kwargs)
 
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
+class UserPermission(permissions.IsAdminUser):
+    def has_permission(self, request, view):
+        # POST 接口允许匿名用户调用
+        if view.action == 'create':
+            return True
+        return super().has_permission(request, view)
+
+
+# mixins.CreateModelMixin: POST /users 注册用户接口
+class UserViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [UserPermission]
 
     # 防止浏览器弹登录窗口
     def get_authenticate_header(self, request):
         return {}
 
+    # session 相关接口 login 和 logout
     @action(detail=False,
             methods=['GET'],
             permission_classes=[permissions.IsAuthenticated],
@@ -92,6 +103,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
+# GET /user 获取已经登录的用户
 @api_view(['GET'])
 @authentication_classes([authentication.SessionAuthentication])
 @permission_classes([permissions.IsAuthenticated])
