@@ -17,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username']
+        fields = ['username', 'is_superuser']
 
 
 class HX2022Serializer(HX2021Serializer):
