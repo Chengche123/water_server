@@ -1,5 +1,5 @@
-from django.contrib.auth import login
 from django.contrib.auth.models import User
+from django.contrib.auth import login, logout
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import viewsets
@@ -78,6 +78,16 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
             authentication_classes=[MyBasicAuthentication])
     def login(self, request, pk=None):
         user = request.user
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
+    @action(detail=False,
+            methods=['GET'],
+            permission_classes=[permissions.IsAuthenticated],
+            authentication_classes=[authentication.SessionAuthentication])
+    def logout(self, request, pk=None):
+        user = request.user
+        logout(request._request)
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
