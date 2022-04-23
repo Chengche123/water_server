@@ -54,6 +54,7 @@ CHANNEL_LAYERS = {
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^http://127\.0\.0\.1.*",
+    r"^http://localhost.*",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
