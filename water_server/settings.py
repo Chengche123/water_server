@@ -31,6 +31,8 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+# for pipreqs
+import django_extensions
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
