@@ -98,6 +98,8 @@ WSGI_APPLICATION = 'water_server.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+# for pipreqs
+import MySQLdb
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
