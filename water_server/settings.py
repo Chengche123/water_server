@@ -99,7 +99,10 @@ WSGI_APPLICATION = 'water_server.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 # for pipreqs
-import MySQLdb
+try:
+    import mysqlclient
+except:
+    pass
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -111,6 +114,8 @@ DATABASES = {
     }
 }
 
+# for pipreqs
+import django_redis
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
