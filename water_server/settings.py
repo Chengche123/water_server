@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 
 # for pipreqs
 import django_extensions
+import corsheaders
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
