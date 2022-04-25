@@ -58,7 +58,7 @@ class USensor(models.Model):
     monitortype = models.SmallIntegerField(db_column='MonitorType')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'u_sensor'
         ordering = ['-sensortypename']
 
