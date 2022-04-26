@@ -33,5 +33,11 @@ COPY --from=builder /usr/local/lib/python3.8/site-packages/ /usr/local/lib/pytho
 
 EXPOSE 8000
 
+# 数据库和缓存地址
+ARG DB_URL
+ARG CACHE_URL
+ENV DB_URL ${DB_URL:-mysql://root@root:localhost:3306/KJ402}
+ENV CACHE_URL ${CACHE_URL:-redis://localhost:6379}
+
 # 启动服务
 CMD [ "python", "manage.py", "runserver", "0.0.0.0:8000"]
