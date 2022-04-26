@@ -15,12 +15,13 @@ RUN set -eux; \
 # 最终镜像
 FROM python:3.8-slim-buster
 
-# 安装 mysql 驱动
 RUN set -eux; \
     # 换源
     sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list; \ 
     apt-get update; \
-    apt-get install -y --no-install-recommends default-libmysqlclient-dev; \
+    # 安装 mysql 驱动
+    # curl: 用于健康检查
+    apt-get install -y --no-install-recommends default-libmysqlclient-dev curl; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/*;
 
