@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 import os
 from pathlib import Path
+from urllib.parse import urlparse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -103,14 +104,17 @@ try:
     import mysqlclient
 except:
     pass
+# parse connect url
+DB_URL = os.environ.get('DATABASE_URL', 'mysql://root:root@localhost:3307/KJ402')
+db_url_info = urlparse(DB_URL)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DB_SCHEMA', 'KJ402'),
-        'USER': os.environ.get('DB_USER', 'root'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'root'),
-        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
-        'PORT': os.environ.get('DB_PORT', '3307'),
+        'NAME': db_url_info.path.lstrip('/'),
+        'USER': db_url_info.username,
+        'PASSWORD': db_url_info.password,
+        'HOST': db_url_info.hostname,
+        'PORT': db_url_info.port,
     }
 }
 
@@ -119,7 +123,7 @@ import django_redis
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6380",
+        "LOCATION": os.environ.get("CACHE_URL", "redis://localhost:6380"),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
