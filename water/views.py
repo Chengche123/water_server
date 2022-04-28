@@ -13,8 +13,8 @@ from rest_framework_extensions.cache.decorators import cache_response
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 
-from .models import HX2021, HX2022, USensor
-from .serializers import HX2021Serializer, UserSerializer, HX2022Serializer, USensorSerializer, UserCreateSerializer
+from .models import HX2021, HX2022, USensor, AlarmThreshold
+from .serializers import HX2021Serializer, UserSerializer, HX2022Serializer, USensorSerializer, UserCreateSerializer, AlarmThresholdSerializer
 
 
 class CustomLimitOffsetPagination(LimitOffsetPagination):
@@ -141,3 +141,17 @@ class USensorViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     @cache_response(key_func='list_cache_key_func', timeout=600)
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+
+class AlarmThresholdViewSet(viewsets.ModelViewSet):
+    queryset = AlarmThreshold.objects.all()
+    serializer_class = AlarmThresholdSerializer
+    # 认证
+    authentication_classes = [authentication.SessionAuthentication, MyBasicAuthentication]
+    # 权限
+    permission_classes = [permissions.IsAuthenticated]
+    # 分页
+    pagination_class = CustomLimitOffsetPagination
+    # 过滤
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = '__all__'

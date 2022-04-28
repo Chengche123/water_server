@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 
-from .models import HX2021, HX2022, USensor, UserExtend
+from .models import HX2021, HX2022, USensor, UserExtend, AlarmThreshold
 
 
 class HX2021Serializer(serializers.ModelSerializer):
@@ -65,3 +65,10 @@ class USensorSerializer(serializers.ModelSerializer):
     class Meta:
         model = USensor
         fields = ['autoid', 'code', 'sensortypename', 'address', 'measurename']
+
+
+class AlarmThresholdSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AlarmThreshold
+        fields = '__all__'
