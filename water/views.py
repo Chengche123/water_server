@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout
+from django.utils.translation import gettext_lazy
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import mixins
@@ -9,6 +10,7 @@ from rest_framework import authentication
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework import exceptions
 from rest_framework_extensions.cache.decorators import cache_response
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
@@ -24,9 +26,12 @@ class CustomLimitOffsetPagination(LimitOffsetPagination):
 class MyBasicAuthentication(authentication.BasicAuthentication):
     def authenticate(self, request):
         user_auth_tuple = super().authenticate(request)
-        # 如果认证成功，返回 cookie
+        # 账号和密码验证成功
+        user, _ = user_auth_tuple
+        # 验证访问站点权限
+        if not user.is_superuser and not user.extend.is_access:
+            raise exceptions.AuthenticationFailed(gettext_lazy('无进入站点权限，请等待管理员审核'))
         if user_auth_tuple:
-            user, _ = user_auth_tuple
             login(request._request, user)
         return user_auth_tuple
 
@@ -40,7 +45,7 @@ class HX2021ViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = '__all__'
     # 认证
-    authentication_classes = [authentication.SessionAuthentication, MyBasicAuthentication]
+    authentication_classes = [authentication.SessionAuthentication]
     # 权限
     permission_classes = [permissions.IsAuthenticated]
 
@@ -57,7 +62,7 @@ class HX2022ViewSet(CacheResponseMixin, viewsets.ModelViewSet, HX2021ViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     # 认证
     # 去掉 csrf 验证，因为要在脚本中定时发送 POST 请求
-    authentication_classes = [CsrfExemptSessionAuthentication, MyBasicAuthentication]
+    authentication_classes = [CsrfExemptSessionAuthentication]
 
     @cache_response(key_func='list_cache_key_func', timeout=60)
     def list(self, request, *args, **kwargs):
@@ -129,7 +134,7 @@ class USensorViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = USensor.objects.all()
     serializer_class = USensorSerializer
     # 认证
-    authentication_classes = [authentication.SessionAuthentication, MyBasicAuthentication]
+    authentication_classes = [authentication.SessionAuthentication]
     # 权限
     permission_classes = [permissions.IsAuthenticated]
     # 分页
@@ -147,7 +152,7 @@ class AlarmThresholdViewSet(viewsets.ModelViewSet):
     queryset = AlarmThreshold.objects.all()
     serializer_class = AlarmThresholdSerializer
     # 认证
-    authentication_classes = [authentication.SessionAuthentication, MyBasicAuthentication]
+    authentication_classes = [authentication.SessionAuthentication]
     # 权限
     permission_classes = [permissions.IsAuthenticated]
     # 分页
