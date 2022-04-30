@@ -100,7 +100,7 @@ class UserViewSet(viewsets.ModelViewSet):
     # 过滤
     filter_backends = [DjangoFilterBackend]
     # Note that using filterset_fields and filterset_class together is not supported.
-    filterset_class = UserFilter
+    filterset_fields = ['extend__is_access']
 
     def get_serializer_class(self):
         try:
