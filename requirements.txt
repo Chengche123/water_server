@@ -7,5 +7,6 @@ django_redis==5.2.0
 djangochannelsrestframework==1.0.0
 djangorestframework==3.13.1
 drf_extensions==0.7.1
+drf_writable_nested==0.6.3
 mysqlclient==2.1.0
 requests==2.27.1

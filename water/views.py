@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout
 from django.utils.translation import gettext_lazy
+from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import mixins
@@ -23,19 +24,6 @@ class CustomLimitOffsetPagination(LimitOffsetPagination):
     default_limit = 10
 
 
-class MyBasicAuthentication(authentication.BasicAuthentication):
-    def authenticate(self, request):
-        user_auth_tuple = super().authenticate(request)
-        # 账号和密码验证成功
-        user, _ = user_auth_tuple
-        # 验证访问站点权限
-        if not user.is_superuser and not user.extend.is_access:
-            raise exceptions.AuthenticationFailed(gettext_lazy('无进入站点权限，请等待管理员审核'))
-        if user_auth_tuple:
-            login(request._request, user)
-        return user_auth_tuple
-
-
 class HX2021ViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = HX2021.objects.all()
     serializer_class = HX2021Serializer
@@ -43,6 +31,7 @@ class HX2021ViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = CustomLimitOffsetPagination
     # 过滤
     filter_backends = [DjangoFilterBackend]
+    # Note that using filterset_fields and filterset_class together is not supported.
     filterset_fields = '__all__'
     # 认证
     authentication_classes = [authentication.SessionAuthentication]
@@ -77,7 +66,27 @@ class UserPermission(permissions.IsAdminUser):
         return super().has_permission(request, view)
 
 
-# mixins.CreateModelMixin: POST /users 注册用户接口
+class MyBasicAuthentication(authentication.BasicAuthentication):
+    def authenticate(self, request):
+        user_auth_tuple = super().authenticate(request)
+        # 账号和密码验证成功
+        user, _ = user_auth_tuple
+        # 验证访问站点权限
+        if not user.is_superuser and not user.extend.is_access:
+            raise exceptions.AuthenticationFailed(gettext_lazy('无进入站点权限，请等待管理员审核'))
+        if user_auth_tuple:
+            login(request._request, user)
+        return user_auth_tuple
+
+
+class UserFilter(filters.FilterSet):
+    is_access = filters.BooleanFilter(field_name='extend__is_access', lookup_expr='exact')
+
+    class Meta:
+        model = User
+        fields = ['is_access']
+
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -86,6 +95,10 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_action_classes = {
         'create': UserCreateSerializer,
     }
+    # 过滤
+    filter_backends = [DjangoFilterBackend]
+    # Note that using filterset_fields and filterset_class together is not supported.
+    filterset_class = UserFilter
 
     def get_serializer_class(self):
         try:

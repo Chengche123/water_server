@@ -112,6 +112,7 @@ class HX2022(models.Model):
 
 
 class UserExtend(models.Model):
+    # 级联删除
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='extend')
     telephone_number = models.CharField(max_length=30, blank=True, null=True)
     # 是否能够访问站点

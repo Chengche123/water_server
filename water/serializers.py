@@ -1,5 +1,8 @@
-from numpy import source
 from rest_framework import serializers
+from rest_framework.fields import empty
+from drf_writable_nested.mixins import UniqueFieldsMixin
+from drf_writable_nested.serializers import WritableNestedModelSerializer
+
 
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
@@ -14,42 +17,49 @@ class HX2021Serializer(serializers.ModelSerializer):
         exclude = ['originalvalue', 'lasttime', 'valuestate', 'valuetype', 'lastvalue', 'flag']
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserExtendSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserExtend
+        exclude = ['user', 'id']
+
+
+# 匿名用户注册时不能改变 is_access 字段
+class UserExtendCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserExtend
+        exclude = ['user', 'id', 'is_access']
+
+    def get_value(self, dictionary):
+        # 在创建用户时，不带 extend 字段也会创建一个该模型的实例
+        value = super().get_value(dictionary)
+        if value == empty:
+            return {}
+        return value
+
+
+class UserSerializer(WritableNestedModelSerializer):
     # 只读字段
     is_superuser = serializers.ReadOnlyField()
-    # 手机号
-    telephone_number = serializers.CharField(source="extend.telephone_number", required=False)
-    # is_access 只读
-    is_access = serializers.ReadOnlyField(source='extend.is_access')
+    # 可写 extend
+    extend = UserExtendSerializer(many=False)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'telephone_number', 'is_superuser', 'is_access']
+        fields = ['id', 'username', 'email', 'is_superuser', 'is_staff', 'extend']
 
 
 # 创建用户时的字段
 class UserCreateSerializer(UserSerializer):
 
-    # AssertionError: The `.create()` method does not support writable dotted-source fields by default.
-    # Write an explicit `.create()` method for serializer `water.serializers.UserCreateSerializer`,
-    # or set `read_only=True` on dotted-source serializer fields.
-    def create(self, validated_data):
-        # 从已验证数据中取出 extend 字段
-        extend = validated_data.get('extend', {})
-        if extend:
-            del validated_data['extend']
-
-        validated_data['password'] = make_password(validated_data['password'])
-        user = User(**validated_data)
-        user.save()
-
-        user_extend = UserExtend(user=user, **extend)
-        user_extend.save()
-
-        return user
+    extend = UserExtendCreateSerializer(many=False)
 
     class Meta(UserSerializer.Meta):
-        fields = ['username', 'password', 'email', 'telephone_number']
+        fields = ['username', 'password', 'email', 'extend']
+
+    # 密码加盐
+    def create(self, validated_data):
+        validated_data['password'] = make_password(validated_data['password'])
+        return super().create(validated_data)
 
 
 class HX2022Serializer(HX2021Serializer):
