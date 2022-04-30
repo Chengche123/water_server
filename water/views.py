@@ -90,6 +90,8 @@ class UserFilter(filters.FilterSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    # 去掉 csrf 验证
+    authentication_classes = [CsrfExemptSessionAuthentication]
     permission_classes = [UserPermission]
     # 定制序列化
     serializer_action_classes = {
