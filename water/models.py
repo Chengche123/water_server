@@ -125,9 +125,9 @@ class UserExtend(models.Model):
 class AlarmThreshold(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='alarm_threshold')
     sensor = models.ForeignKey(USensor, on_delete=models.CASCADE, related_name='alarm_threshold')
-    threshold_value = models.DecimalField(max_digits=10, decimal_places=2)
-    # 0：电话 1：短信 2：邮箱
-    method = models.SmallIntegerField(default=2)
+    threshold_value = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    # bit0：电话 bit1：短信 bit2：邮箱
+    method = models.SmallIntegerField(default=0)
 
     class Meta:
         db_table = 'alarm_threshold'

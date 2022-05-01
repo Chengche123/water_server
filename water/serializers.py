@@ -76,7 +76,9 @@ class USensorSerializer(serializers.ModelSerializer):
 
 
 class AlarmThresholdSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(source='user.id')
+    sensor_id = serializers.IntegerField(source='sensor.autoid')
 
     class Meta:
         model = AlarmThreshold
-        fields = '__all__'
+        exclude = ['user', 'sensor']

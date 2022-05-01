@@ -100,6 +100,7 @@ class UserViewSet(viewsets.ModelViewSet):
     # 过滤
     filter_backends = [DjangoFilterBackend]
     # Note that using filterset_fields and filterset_class together is not supported.
+    # https://docs.djangoproject.com/zh-hans/4.0/topics/db/queries/#lookups-that-span-relationships-1
     filterset_fields = ['extend__is_access']
 
     def get_serializer_class(self):
