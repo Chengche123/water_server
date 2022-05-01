@@ -76,9 +76,20 @@ class USensorSerializer(serializers.ModelSerializer):
 
 
 class AlarmThresholdSerializer(serializers.ModelSerializer):
-    user_id = serializers.IntegerField(source='user.id')
-    sensor_id = serializers.IntegerField(source='sensor.autoid')
 
     class Meta:
         model = AlarmThreshold
-        exclude = ['user', 'sensor']
+        exclude = []
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=AlarmThreshold.objects.all(),
+                fields=['user', 'sensor']
+            )
+        ]
+
+    # https://www.django-rest-framework.org/community/3.0-announcement/#differences-between-modelserializer-validation-and-modelform
+    # https://www.kye.id.au/posts/django-rest-framework-model-full-clean/
+    # def validate(self, attrs):
+    #     instance = AlarmThreshold(**attrs)
+    #     instance.full_clean()
+    #     return attrs

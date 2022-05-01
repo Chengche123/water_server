@@ -168,7 +168,7 @@ class AlarmThresholdViewSet(viewsets.ModelViewSet):
     queryset = AlarmThreshold.objects.all()
     serializer_class = AlarmThresholdSerializer
     # 认证
-    authentication_classes = [authentication.SessionAuthentication]
+    authentication_classes = [CsrfExemptSessionAuthentication]
     # 权限
     permission_classes = [permissions.IsAuthenticated]
     # 分页

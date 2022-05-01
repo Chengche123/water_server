@@ -1,4 +1,4 @@
-from pyexpat import model
+import random
 from django.contrib.auth.models import User
 from django.db.models import Q
 from water import models
@@ -18,5 +18,5 @@ def run():
         row.user = user
         row.sensor = sensor
         row.threshold_value = threshold_value
-        row.method = 0
+        row.method = random.choice([0, 1, 2, 4, 3, 5, 6, 7])
         row.save()

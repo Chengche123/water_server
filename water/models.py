@@ -62,9 +62,6 @@ class USensor(models.Model):
         db_table = 'u_sensor'
         ordering = ['-sensortypename']
 
-    def __str__(self):
-        return str(self.code)
-
 
 class HX2021(models.Model):
     autoid = models.BigAutoField(db_column='Autoid', primary_key=True)  # Field name made lowercase.
@@ -131,3 +128,8 @@ class AlarmThreshold(models.Model):
 
     class Meta:
         db_table = 'alarm_threshold'
+        # https://docs.djangoproject.com/zh-hans/4.0/ref/models/options/#constraints
+        # https://docs.djangoproject.com/zh-hans/4.0/ref/models/constraints/#uniqueconstraint
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'sensor'], name='unique_threshold')
+        ]
