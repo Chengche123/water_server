@@ -54,7 +54,7 @@ class UserCreateSerializer(UserSerializer):
     extend = UserExtendCreateSerializer(many=False)
 
     class Meta(UserSerializer.Meta):
-        fields = ['username', 'password', 'email', 'extend']
+        fields = ['id', 'username', 'password', 'email', 'extend']
 
     # 密码加盐
     def create(self, validated_data):
@@ -76,6 +76,7 @@ class USensorSerializer(serializers.ModelSerializer):
 
 
 class AlarmThresholdSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username')
 
     class Meta:
         model = AlarmThreshold

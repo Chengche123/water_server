@@ -4,14 +4,13 @@ from django.utils.translation import gettext_lazy
 from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
 
-from rest_framework import mixins
 from rest_framework import viewsets
+from rest_framework import exceptions
 from rest_framework import permissions
 from rest_framework import authentication
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework import exceptions
 from rest_framework_extensions.cache.decorators import cache_response
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
@@ -44,6 +43,14 @@ class CsrfExemptSessionAuthentication(authentication.SessionAuthentication):
         return  # To not perform the csrf check previously happening
 
 
+class HX2022Filter(filters.FilterSet):
+    udatetime = filters.IsoDateTimeFromToRangeFilter()
+
+    class Meta:
+        model = HX2022
+        fields = '__all__'
+
+
 class HX2022ViewSet(CacheResponseMixin, viewsets.ModelViewSet, HX2021ViewSet):
     queryset = HX2022.objects.all()
     serializer_class = HX2022Serializer
@@ -52,6 +59,10 @@ class HX2022ViewSet(CacheResponseMixin, viewsets.ModelViewSet, HX2021ViewSet):
     # 认证
     # 去掉 csrf 验证，因为要在脚本中定时发送 POST 请求
     authentication_classes = [CsrfExemptSessionAuthentication]
+    # 过滤
+    filter_backends = [DjangoFilterBackend]
+    # Note that using filterset_fields and filterset_class together is not supported.
+    filterset_class = HX2022Filter
 
     @cache_response(key_func='list_cache_key_func', timeout=60)
     def list(self, request, *args, **kwargs):
