@@ -71,6 +71,13 @@ class HX2022ViewSet(CacheResponseMixin, viewsets.ModelViewSet, HX2021ViewSet):
 
 class UserPermission(permissions.IsAdminUser):
     def has_permission(self, request, view):
+        # 用户对自己的个人信息有 CRUD 权限
+        try:
+            if request.user.id == int(view.kwargs['pk']):
+                return True
+        except:
+            pass
+
         # POST 接口允许匿名用户调用
         if view.action == 'create':
             return True
