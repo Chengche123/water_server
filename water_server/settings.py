@@ -179,4 +179,7 @@ EMAIL_HOST_USER = 'xust_water_monitor@163.com'
 EMAIL_HOST_PASSWORD = 'SNYSJLUBILZLHXDA'
 EMAIL_USE_SSL = True
 # 调试后端
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# 告警间隔, 单位秒
+WATER_ALERT_INTERVAL_SECONDS = 30

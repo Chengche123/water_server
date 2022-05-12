@@ -1,4 +1,7 @@
+import datetime
+
 from django.conf import settings
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout
 from django.utils.translation import gettext_lazy
@@ -85,6 +88,11 @@ class HX2022ViewSet(CacheResponseMixin, viewsets.ModelViewSet, HX2021ViewSet):
 
         # 取出阈值对象
         alarm_threshold = user.alarm_threshold.filter(sensor_id__exact=sensor_id)[0]
+        # 距离上次告警，没有超过 WATER_ALERT_INTERVAL_SECONDS 秒，就无需告警
+        now = timezone.now()
+        last_alert_datetime = alarm_threshold.last_alert_datetime
+        if last_alert_datetime and now - last_alert_datetime < datetime.timedelta(seconds=settings.WATER_ALERT_INTERVAL_SECONDS):
+            return
         threshold_value_min = alarm_threshold.threshold_value_min
         threshold_value_max = alarm_threshold.threshold_value_max
 
@@ -105,6 +113,9 @@ class HX2022ViewSet(CacheResponseMixin, viewsets.ModelViewSet, HX2021ViewSet):
                 [user.email],
                 fail_silently=False,
             )
+            # 设置最后告警时间
+            alarm_threshold.last_alert_datetime = now
+            alarm_threshold.save()
 
     def perform_create(self, serializer):
 

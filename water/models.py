@@ -126,6 +126,8 @@ class AlarmThreshold(models.Model):
     threshold_value_min = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     # bit0：电话 bit1：短信 bit2：邮箱
     method = models.SmallIntegerField(default=0)
+    # 上次告警时间
+    last_alert_datetime = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'alarm_threshold'
