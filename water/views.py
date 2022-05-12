@@ -88,6 +88,10 @@ class HX2022ViewSet(CacheResponseMixin, viewsets.ModelViewSet, HX2021ViewSet):
 
         # 取出阈值对象
         alarm_threshold = user.alarm_threshold.filter(sensor_id__exact=sensor_id)[0]
+        # 确保设置了邮箱告警方式
+        method = alarm_threshold.method
+        if method & 0x04 != 0x04:
+            return
         # 距离上次告警，没有超过 WATER_ALERT_INTERVAL_SECONDS 秒，就无需告警
         now = timezone.now()
         last_alert_datetime = alarm_threshold.last_alert_datetime
