@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout
 from django.utils.translation import gettext_lazy
@@ -67,6 +68,52 @@ class HX2022ViewSet(CacheResponseMixin, viewsets.ModelViewSet, HX2021ViewSet):
     @cache_response(key_func='list_cache_key_func', timeout=60)
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+    # 告警
+    def alert(self, serializer):
+        # 取出 user
+        user = self.request.user
+
+        # 如果不存在邮箱，那么不需要告警
+        if not user.email:
+            return
+
+        # 取出传感器主键
+        sensor = USensor.objects.filter(code__exact=serializer.validated_data['code'])[0]
+        measurename = sensor.measurename
+        sensor_id = sensor.pk
+
+        # 取出阈值对象
+        alarm_threshold = user.alarm_threshold.filter(sensor_id__exact=sensor_id)[0]
+        threshold_value_min = alarm_threshold.threshold_value_min
+        threshold_value_max = alarm_threshold.threshold_value_max
+
+        # 如果阈值超过上下限，告警
+        value = serializer.validated_data['value']
+        if value <= threshold_value_min or value >= threshold_value_max:
+            from django.core.mail import send_mail
+            title = f'警告: {sensor.monitorsite}数据异常'
+            msg = '\n'.join([
+                f'{sensor.sensortypename}: {value}{measurename}',
+                f'低于阈值下限: {threshold_value_min}{measurename}' if value <= threshold_value_min else '',
+                f'高于阈值上限: {threshold_value_max}{measurename}' if value >= threshold_value_max else '',
+            ])
+            send_mail(
+                title,
+                msg,
+                settings.EMAIL_HOST_USER,
+                [user.email],
+                fail_silently=False,
+            )
+
+    def perform_create(self, serializer):
+
+        try:
+            self.alert(serializer)
+        except Exception as e:
+            print(e)
+
+        return super().perform_create(serializer)
 
 
 class UserPermission(permissions.IsAdminUser):

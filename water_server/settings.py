@@ -171,3 +171,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# 邮箱配置
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'xust_water_monitor@163.com'
+EMAIL_HOST_PASSWORD = 'SNYSJLUBILZLHXDA'
+EMAIL_USE_SSL = True
+# 调试后端
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
