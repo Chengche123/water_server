@@ -21,10 +21,6 @@ def run():
     r = s.get(LOGIN_URL, auth=auth.HTTPBasicAuth(LOGIN_USERNAME, LOGIN_PASSWORD))
     r.raise_for_status()
 
-    # post test
-    r = s.post(POST_URL, json={})
-    r.raise_for_status()
-
     hx2021s = HX2021.objects.filter(code__exact=code)
     count = hx2021s.count()
     inx = 0
