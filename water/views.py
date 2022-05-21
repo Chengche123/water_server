@@ -14,6 +14,7 @@ from rest_framework import permissions
 from rest_framework import authentication
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.filters import OrderingFilter
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework_extensions.cache.decorators import cache_response
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
@@ -63,10 +64,12 @@ class HX2022ViewSet(CacheResponseMixin, viewsets.ModelViewSet, HX2021ViewSet):
     # 认证
     # 去掉 csrf 验证，因为要在脚本中定时发送 POST 请求
     authentication_classes = [CsrfExemptSessionAuthentication]
-    # 过滤
-    filter_backends = [DjangoFilterBackend]
+    # 过滤 按字段过滤以及排序
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
     # Note that using filterset_fields and filterset_class together is not supported.
     filterset_class = HX2022Filter
+    # 排序字段
+    ordering_fields = ['udatetime']
 
     @cache_response(key_func='list_cache_key_func', timeout=60)
     def list(self, request, *args, **kwargs):

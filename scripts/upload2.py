@@ -22,8 +22,8 @@ def run():
     r.raise_for_status()
 
     # post test
-    r = s.post(POST_URL, json={})
-    r.raise_for_status()
+    # r = s.post(POST_URL, json={})
+    # r.raise_for_status()
 
     hx2021s = HX2021.objects.filter(code__exact=code)
     count = hx2021s.count()
